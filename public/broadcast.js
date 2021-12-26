@@ -56,6 +56,7 @@ window.onunload = window.onbeforeunload = () => {
 const videoElement = document.querySelector("video");
 const audioSelect = document.querySelector("select#audioSource");
 const videoSelect = document.querySelector("select#videoSource");
+const liveId = document.querySelector("#liveId");
 
 audioSelect.onchange = getStream;
 videoSelect.onchange = getStream;
@@ -110,7 +111,7 @@ function gotStream(stream) {
     option => option.text === stream.getVideoTracks()[0].label
   );
   videoElement.srcObject = stream;
-  socket.emit("broadcaster");
+  socket.emit("broadcaster",liveId.value.toString());
 }
 
 function handleError(error) {

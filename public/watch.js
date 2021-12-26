@@ -15,6 +15,7 @@ const config = {
 const socket = io.connect(window.location.origin);
 const video = document.querySelector("video");
 const enableAudioButton = document.querySelector("#enable-audio");
+const liveId = document.querySelector("#liveId");
 
 enableAudioButton.addEventListener("click", enableAudio)
 
@@ -45,14 +46,15 @@ socket.on("candidate", (id, candidate) => {
 });
 
 socket.on("connect", () => {
-  socket.emit("watcher");
+  socket.emit("watcher",liveId.value.toString());
 });
 
 socket.on("broadcaster", () => {
-  socket.emit("watcher");
+  socket.emit("watcher",liveId.value.toString());
 });
 
 window.onunload = window.onbeforeunload = () => {
+  socket.emit("disconnect",liveId.value.toString());
   socket.close();
   peerConnection.close();
 };

@@ -8,6 +8,9 @@
   <body>
     <video playsinline autoplay muted></video>
     <button id="enable-audio">Enable audio</button>
+
+    <input type="hidden" id="liveId" value="<%= liveId %>" />
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="/watch.js"></script>
   </body>
