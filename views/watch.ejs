@@ -3,11 +3,96 @@
   <head>
     <title>Viewer</title>
     <meta charset="UTF-8" />
-    <link href="/styles.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/watcher_styles.css" rel="stylesheet" />
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel="stylesheet" />
   </head>
   <body>
-    <video playsinline autoplay muted></video>
-    <button id="enable-audio">Enable audio</button>
+    <!-- <button id="enable-audio">Enable audio</button> -->
+    <section class="select">
+      <label for="audioSource">Audio source: </label>
+      <select id="audioSource"></select>
+    </section>
+
+    <section class="select">
+      <label for="videoSource">Video source: </label>
+      <select id="videoSource"></select>
+    </section>
+
+    <div class="container">
+      <div class="main_frame">
+        <video playsinline autoplay muted ></video>
+        <div class="operations">
+          <div class="btn">
+            <i class='bx bx-play'></i>
+          </div>
+          <div class="btn">
+            <i class='bx bx-pause'></i>
+          </div>
+          <div class="btn">
+            <i class='bx bx-microphone'></i>
+          </div>
+        </div>
+        <div class="topbar">
+          <div class="topLeft">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAoElEQVRIieWV0QkDIRAFp8NYwnWU6yDbkXagnSQ/LiSH3pn4LhCy8H5EZnBlFf6hFuAGROBeE+vaZQYcgPwE7SXXvW/VOgDe5nom3LMewcME3LPbriIQ5B58EcB3T2FCgbUESSiILYEK7vm+QNmi1BKYUGAtgWLIPN1hKwJ46cFVpzh8WU997GYkw3CvwNidFD74cLYi43VOUl2bAv9GPQC3BzcK4b6KygAAAABJRU5ErkJggg=="/>
+          </div>
+          <p>Live</p>
+          <div class="visitors" onclick="toggleComments()">
+            <p class="visitors_num">102</p>
+            <i class='bx bx-group'></i>
+          </div>
+        </div>
+      </div>
+      <div class="right_menu">
+        <div class="comment_title">
+          <h3 id="comment_header">Comments</h3>
+        </div>
+        <div class="comments">
+          <div class="comment">
+            <div class="avatar"></div>
+            <div class="user">
+              sina hormozi
+              <p>salam sina jan salam sina jan salam sina jan salam sina jan</p>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="avatar"></div>
+            <div class="user">
+              sina hormozi
+              <p>salam sina jan salam sina jan salam sina jan salam sina jan</p>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="avatar"></div>
+            <div class="user">
+              sina hormozi
+              <p>salam sina jan salam sina jan salam sina jan salam sina jan</p>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="avatar"></div>
+            <div class="user">
+              sina hormozi
+              <p>salam sina jan salam sina jan salam sina jan salam sina jan</p>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="avatar"></div>
+            <div class="user">
+              sina hormozi
+              <p>salam sina jan salam sina jan salam sina jan salam sina jan</p>
+            </div>
+          </div>
+        </div>
+        <div class="response">
+          <div class="response_input">
+            <input placeholder="Type your comment ..." />
+            <i class='bx bxs-send'></i>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <input type="hidden" id="liveId" value="<%= liveId %>" />
 

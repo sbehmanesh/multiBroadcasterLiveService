@@ -17,7 +17,7 @@ const video = document.querySelector("video");
 const enableAudioButton = document.querySelector("#enable-audio");
 const liveId = document.querySelector("#liveId");
 
-enableAudioButton.addEventListener("click", enableAudio)
+// enableAudioButton.addEventListener("click", enableAudio)
 
 socket.on("offer", (id, description) => {
   peerConnection = new RTCPeerConnection(config);
@@ -62,4 +62,13 @@ window.onunload = window.onbeforeunload = () => {
 function enableAudio() {
   console.log("Enabling audio")
   video.muted = false;
+}
+
+function toggleComments(){
+  element = document.querySelector('.right_menu');
+  if(element.classList.contains('active')){
+    element.classList.remove('active');
+  }else{
+    element.classList.add('active');
+  }
 }
