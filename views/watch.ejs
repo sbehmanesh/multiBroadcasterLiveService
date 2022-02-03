@@ -4,7 +4,8 @@
     <title>Viewer</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/watcher_styles.css" rel="stylesheet" />
+    <link href="/assets/css/common.css" rel="stylesheet" />
+    <link href="/assets/css/watcher_styles.css" rel="stylesheet" />
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel="stylesheet" />
   </head>
   <body>
@@ -23,29 +24,30 @@
       <div class="main_frame">
         <video playsinline autoplay muted ></video>
         <div class="operations">
-          <div class="btn">
-            <i class='bx bx-play'></i>
+          <div class="btn" id="mute-unmute" data-positive="bxs-volume-full" data-negetive="bxs-volume-mute">
+            <i class='bx bxs-volume-full'></i>
           </div>
-          <div class="btn">
-            <i class='bx bx-pause'></i>
-          </div>
-          <div class="btn">
-            <i class='bx bx-microphone'></i>
+          <div class="btn red" id="end-live">
+            <i class='bx bxs-phone-call'></i>
           </div>
         </div>
         <div class="topbar">
-          <div class="topLeft">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAoElEQVRIieWV0QkDIRAFp8NYwnWU6yDbkXagnSQ/LiSH3pn4LhCy8H5EZnBlFf6hFuAGROBeE+vaZQYcgPwE7SXXvW/VOgDe5nom3LMewcME3LPbriIQ5B58EcB3T2FCgbUESSiILYEK7vm+QNmi1BKYUGAtgWLIPN1hKwJ46cFVpzh8WU997GYkw3CvwNidFD74cLYi43VOUl2bAv9GPQC3BzcK4b6KygAAAABJRU5ErkJggg=="/>
+          <div class="live">
+            <i class="bx bxs-circle"></i>
+            <p>Live</p>
           </div>
-          <p>Live</p>
-          <div class="visitors" onclick="toggleComments()">
-            <p class="visitors_num">102</p>
+          <div class="menu">
+            <i class="bx bx-menu"></i>
+          </div>
+          <div class="visitors">
+            <p class="visitors_num">0</p>
             <i class='bx bx-group'></i>
           </div>
         </div>
       </div>
       <div class="right_menu">
         <div class="comment_title">
+          <i class="bx bx-x close-menu"></i>
           <h3 id="comment_header">Comments</h3>
         </div>
         <div class="comments">
@@ -97,6 +99,7 @@
     <input type="hidden" id="liveId" value="<%= liveId %>" />
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/watch.js"></script>
+    <script src="/assets/js/watch.js"></script>
+    <script src="/assets/js/watch_events.js"></script>
   </body>
 </html>

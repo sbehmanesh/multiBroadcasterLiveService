@@ -12,6 +12,13 @@ const config = {
   ]
 };
 
+// Get camera and microphone
+const videoElement = document.querySelector("video");
+const audioSelect = document.querySelector("select#audioSource");
+const videoSelect = document.querySelector("select#videoSource");
+const muted = document.querySelector("#mute-unmute");
+const liveId = document.querySelector("#liveId");
+const visitors_num = document.querySelector(".visitors_num");
 const socket = io.connect(window.location.origin);
 
 socket.on("answer", (id, description) => {
@@ -19,6 +26,7 @@ socket.on("answer", (id, description) => {
 });
 
 socket.on("watcher", id => {
+  console.log('Hello new watcher');
   const peerConnection = new RTCPeerConnection(config);
   peerConnections[id] = peerConnection;
 
@@ -52,12 +60,12 @@ window.onunload = window.onbeforeunload = () => {
   socket.close();
 };
 
-// Get camera and microphone
-const videoElement = document.querySelector("video");
-const audioSelect = document.querySelector("select#audioSource");
-const videoSelect = document.querySelector("select#videoSource");
-const liveId = document.querySelector("#liveId");
+socket.on("visitors_number", number => {
+  visitors_num.innerHTML = number;
+});
 
+
+muted.onclick = getStream
 audioSelect.onchange = getStream;
 videoSelect.onchange = getStream;
 
@@ -104,9 +112,17 @@ function getStream() {
 
 function gotStream(stream) {
   window.stream = stream;
-  audioSelect.selectedIndex = [...audioSelect.options].findIndex(
-    option => option.text === stream.getAudioTracks()[0].label
-  );
+  let isMuted = muted.children[0].classList.contains('bxs-microphone-off');
+  if(isMuted) {
+    console.log('muted');
+    stream.getAudioTracks()[0].enabled = false;
+  }else{
+    console.log('not muted');
+    stream.getAudioTracks()[0].enabled = true;
+    audioSelect.selectedIndex = [...audioSelect.options].findIndex(
+      option => option.text === stream.getAudioTracks()[0].label
+    );
+  }
   videoSelect.selectedIndex = [...videoSelect.options].findIndex(
     option => option.text === stream.getVideoTracks()[0].label
   );

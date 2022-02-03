@@ -16,8 +16,9 @@ const socket = io.connect(window.location.origin);
 const video = document.querySelector("video");
 const enableAudioButton = document.querySelector("#enable-audio");
 const liveId = document.querySelector("#liveId");
+const visitors_num = document.querySelector(".visitors_num");
 
-// enableAudioButton.addEventListener("click", enableAudio)
+socket.emit("visit",liveId.value.toString());
 
 socket.on("offer", (id, description) => {
   peerConnection = new RTCPeerConnection(config);
@@ -50,7 +51,12 @@ socket.on("connect", () => {
 });
 
 socket.on("broadcaster", () => {
+  console.log('I am new watcher');
   socket.emit("watcher",liveId.value.toString());
+});
+
+socket.on("visitors_number", number => {
+  visitors_num.innerHTML = number;
 });
 
 window.onunload = window.onbeforeunload = () => {
@@ -64,11 +70,21 @@ function enableAudio() {
   video.muted = false;
 }
 
-function toggleComments(){
-  element = document.querySelector('.right_menu');
-  if(element.classList.contains('active')){
-    element.classList.remove('active');
-  }else{
-    element.classList.add('active');
-  }
+function disableAudio() {
+  console.log("Disabling audio")
+  video.muted = true;
 }
+
+document.querySelector('#mute-unmute').addEventListener('click',function(){
+  let isMuted = this.children[0].classList.contains('bxs-volume-full');
+  if(isMuted) {
+    console.log('muted');
+    disableAudio();
+  }else{
+    console.log('unmuted');
+    enableAudio();
+  }
+});
+enableAudio();
+
+
