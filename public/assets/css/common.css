@@ -95,6 +95,18 @@ body {
     background-color: orange;
     margin: 0 4px;
     flex-shrink: 0;
+}
+
+.comments .comment .avatar.admin {
+    border: solid 3px #17db51;
+}
+
+.comments .comment .avatar img {
+    width:100%;
+} 
+
+.comments .user span {
+    color: #17db51;
 } 
 
 .comment_title {
@@ -258,6 +270,10 @@ body {
 
 .none {
     display: none;
+}
+
+#send_comment {
+    cursor: pointer;
 }
 
 @keyframes beat {

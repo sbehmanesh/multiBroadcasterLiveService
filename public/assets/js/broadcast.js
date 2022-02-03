@@ -19,6 +19,9 @@ const videoSelect = document.querySelector("select#videoSource");
 const muted = document.querySelector("#mute-unmute");
 const liveId = document.querySelector("#liveId");
 const visitors_num = document.querySelector(".visitors_num");
+const send_comment = document.querySelector("#send_comment");
+const comment = document.querySelector("#comment_text");
+const comments_div = document.querySelector(".comments");
 const socket = io.connect(window.location.origin);
 
 socket.on("answer", (id, description) => {
@@ -64,6 +67,32 @@ socket.on("visitors_number", number => {
   visitors_num.innerHTML = number;
 });
 
+socket.on("comment", (text,type) => {
+  if(type == "admin"){
+    comment_html = 
+      `<div class="comment">
+        <div class="avatar admin">
+          <img src='/images/avatar.png' />
+        </div>
+        <div class="user">
+          <span>Admin</span>
+          <p>${text}</p>
+        </div>
+      </div>`;
+  }else{
+    comment_html = 
+      `<div class="comment">
+        <div class="avatar">
+          <img src='/images/avatar.png' />
+        </div>
+        <div class="user">
+          guest
+          <p>${text}</p>
+        </div>
+      </div>`;
+  }
+  comments_div.innerHTML += comment_html;
+});
 
 muted.onclick = getStream
 audioSelect.onchange = getStream;
@@ -133,3 +162,8 @@ function gotStream(stream) {
 function handleError(error) {
   console.error("Error: ", error);
 }
+
+send_comment.addEventListener('click',function(){
+  let text = comment.value;
+  socket.emit("new_comment",liveId.value.toString(),text,"admin");
+});

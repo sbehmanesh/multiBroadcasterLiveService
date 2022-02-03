@@ -17,8 +17,10 @@ const video = document.querySelector("video");
 const enableAudioButton = document.querySelector("#enable-audio");
 const liveId = document.querySelector("#liveId");
 const visitors_num = document.querySelector(".visitors_num");
+const send_comment = document.querySelector("#send_comment");
+const comment = document.querySelector("#comment_text");
+const comments_div = document.querySelector(".comments");
 
-socket.emit("visit",liveId.value.toString());
 
 socket.on("offer", (id, description) => {
   peerConnection = new RTCPeerConnection(config);
@@ -50,13 +52,43 @@ socket.on("connect", () => {
   socket.emit("watcher",liveId.value.toString());
 });
 
+socket.on("connect", () => {
+  socket.emit("visit",liveId.value.toString());
+});
+
 socket.on("broadcaster", () => {
-  console.log('I am new watcher');
   socket.emit("watcher",liveId.value.toString());
 });
 
 socket.on("visitors_number", number => {
   visitors_num.innerHTML = number;
+});
+
+socket.on("comment", (text,type) => {
+  if(type == "admin"){
+    comment_html = 
+      `<div class="comment">
+        <div class="avatar admin">
+          <img src='/images/avatar.png' />
+        </div>
+        <div class="user">
+          <span>Admin</span>
+          <p>${text}</p>
+        </div>
+      </div>`;
+  }else{
+    comment_html = 
+      `<div class="comment">
+        <div class="avatar">
+          <img src='/images/avatar.png' />
+        </div>
+        <div class="user">
+          guest
+          <p>${text}</p>
+        </div>
+      </div>`;
+  }
+  comments_div.innerHTML += comment_html;
 });
 
 window.onunload = window.onbeforeunload = () => {
@@ -86,5 +118,10 @@ document.querySelector('#mute-unmute').addEventListener('click',function(){
   }
 });
 enableAudio();
+
+send_comment.addEventListener('click',function(){
+  let text = comment.value;
+  socket.emit("new_comment",liveId.value.toString(),text,"user");
+});
 
 
