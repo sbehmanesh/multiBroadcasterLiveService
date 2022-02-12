@@ -38,6 +38,10 @@ io.sockets.on("connection", socket => {
     console.log(comment_text);
     io.emit("comment", comment_text , type);    
   });
+  
+  socket.on("shake_hands", (liveId,)=>{
+    socket.broadcast.emit("shake_hands");    
+  });
 
   socket.on("watcher", (liveId) => {
     socket.to(broadcaster[liveId]).emit("watcher", socket.id);

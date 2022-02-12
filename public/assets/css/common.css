@@ -276,6 +276,51 @@ body {
     cursor: pointer;
 }
 
+.events {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    padding:15px;
+    overflow: hidden;
+}
+
+.events .row {
+    backdrop-filter: blur(3px);
+    display:flex;
+    align-items: center;
+}
+
+.events .row span {
+    color:white;
+    text-shadow: 1px 1px black;
+    margin-left: 5px;
+}
+
+.events .row.fadeOut{
+    animation:fadeOut 0.5s 1;
+    -webkit-animation:fadeOut 0.5s 1;
+    animation-fill-mode: forwards;
+    
+    animation-delay:3s;
+    -webkit-animation-delay:3s; /* Safari and Chrome */
+    -webkit-animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+}
+
+@keyframes fadeOut{
+    0% {opacity :1;}
+    90% {opacity :0;}
+    100% {display :none;}
+}
+
+@-webkit-keyframes fadeOut{
+    0% {opacity :1;}
+    90% {opacity :0;}
+    100% {display :none;}
+}
+
 @keyframes beat {
     0% {
         transform: scale(0.1);

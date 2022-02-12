@@ -20,6 +20,7 @@ const visitors_num = document.querySelector(".visitors_num");
 const send_comment = document.querySelector("#send_comment");
 const comment = document.querySelector("#comment_text");
 const comments_div = document.querySelector(".comments");
+const events_div = document.querySelector(".events");
 
 
 socket.on("offer", (id, description) => {
@@ -56,12 +57,26 @@ socket.on("connect", () => {
   socket.emit("visit",liveId.value.toString());
 });
 
+socket.on("connect", () => {
+  socket.emit("shake_hands",liveId.value.toString());
+});
+
 socket.on("broadcaster", () => {
   socket.emit("watcher",liveId.value.toString());
 });
 
 socket.on("visitors_number", number => {
   visitors_num.innerHTML = number;
+});
+
+socket.on("shake_hands", () => {
+  new_row = `
+    <div class="row fadeOut">
+      <i class='bx bxs-user-plus bx-tada' style='color:#95d63d;font-size:28px'></i> 
+      <span>new user joined</span>
+    </div>
+  `;
+  events_div.innerHTML = new_row + events_div.innerHTML;
 });
 
 socket.on("comment", (text,type) => {
