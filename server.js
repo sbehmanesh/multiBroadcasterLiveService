@@ -15,6 +15,9 @@ app.use(express.static(__dirname + "/public"));
 usersRoute = require('./routes/users')
 app.use(usersRoute)
 
+SFURoute = require('./routes/SFU')
+app.use(SFURoute)
+
 const store = require('global-key-value-store');
 
 
@@ -71,4 +74,6 @@ io.sockets.on("connection", socket => {
   });
   
 });
-server.listen(port, () => console.log(`Server is running on port ${port}`));
+
+
+server.listen(port,'192.168.1.5' ,() => console.log(`Server is running on port ${port}`));

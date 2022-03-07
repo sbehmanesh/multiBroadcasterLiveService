@@ -25,40 +25,37 @@ const comments_div = document.querySelector(".comments");
 const events_div = document.querySelector(".events");
 const socket = io.connect(window.location.origin);
 
-socket.on("answer", (id, description) => {
-  peerConnections[id].setRemoteDescription(description);
-});
 
-socket.on("watcher", id => {
-  console.log('Hello new watcher');
-  const peerConnection = new RTCPeerConnection(config);
-  peerConnections[id] = peerConnection;
 
-  let stream = videoElement.srcObject;
-  stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+window.onload = () => {
+  init();
+}
 
-  peerConnection.onicecandidate = event => {
-    if (event.candidate) {
-      socket.emit("candidate", id, event.candidate);
-    }
+async function init() {
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  videoElement.srcObject = stream;
+  const peer = createPeer();
+  stream.getTracks().forEach(track => peer.addTrack(track, stream));
+}
+
+function createPeer() {
+  const peer = new RTCPeerConnection(config);
+  peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+
+  return peer;
+}
+
+async function handleNegotiationNeededEvent(peer) {
+  const offer = await peer.createOffer();
+  await peer.setLocalDescription(offer);
+  const payload = {
+      sdp: peer.localDescription
   };
+  const { data } = await axios.post('/broadcast', payload);
+  const desc = new RTCSessionDescription(data.sdp);
+  peer.setRemoteDescription(desc).catch(e => console.log(e));
+}
 
-  peerConnection
-    .createOffer()
-    .then(sdp => peerConnection.setLocalDescription(sdp))
-    .then(() => {
-      socket.emit("offer", id, peerConnection.localDescription);
-    });
-});
-
-socket.on("candidate", (id, candidate) => {
-  peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
-});
-
-socket.on("disconnectPeer", id => {
-  peerConnections[id].close();
-  delete peerConnections[id];
-});
 
 window.onunload = window.onbeforeunload = () => {
   socket.close();
@@ -104,6 +101,7 @@ socket.on("comment", (text,type) => {
   }
   comments_div.innerHTML += comment_html;
 });
+
 
 muted.onclick = getStream
 audioSelect.onchange = getStream;
