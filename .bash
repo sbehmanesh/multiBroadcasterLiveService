@@ -1,0 +1,1 @@
+sqlite3 live.db < db_init.sql;

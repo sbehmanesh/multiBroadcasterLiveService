@@ -298,7 +298,7 @@ body {
     margin-left: 5px;
 }
 
-.events .row.fadeOut{
+.events .fadeOut{
     animation:fadeOut 0.5s 1;
     -webkit-animation:fadeOut 0.5s 1;
     animation-fill-mode: forwards;

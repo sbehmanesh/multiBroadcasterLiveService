@@ -1,5 +1,11 @@
 const express = require("express");
+const sqlite3 = require('sqlite3');
+
 const app = express();
+const db = new sqlite3.Database('./live.db');
+broadcastDbServices = require('./db_services/broadcast_db')(db)
+watcherDbServices = require('./db_services/watcher_db')(db)
+commentDbServices = require('./db_services/comment_db')(db)
 
 app.set('view engine', 'ejs');
 
@@ -24,56 +30,42 @@ const store = require('global-key-value-store');
 io.sockets.on("error", e => console.log(e));
 io.sockets.on("connection", socket => {
 
-  socket.on("broadcaster", (liveId) => {
-    store.set('visitors_num-'+liveId,0);
-    broadcaster[liveId] = socket.id;
-    socket.broadcast.emit("broadcaster");
+  socket.on("newBroadcaster", (liveId) => {
+    socket.join(liveId);
   });
 
   socket.on("visit", (liveId)=>{
-    let visitors_num = store.get('visitors_num-'+liveId);
-    visitors_num += 1;
-    store.set('visitors_num-'+liveId, visitors_num);
-    io.emit("visitors_number", visitors_num);    
+    socket.join(liveId);
+    broadcastDbServices.getBroadcastInfoByBroadcastId(liveId)
+    .then((row) => {
+      let visitNumber = row.visit_number;
+      visitNumber += 1;
+      broadcastDbServices.updateBroadcastVisitNumber(liveId,visitNumber);
+      io.emit("visitorsNumber", visitNumber);    
+    }).catch((error) => {
+      console.log(error);
+    });
   });
 
-  socket.on("new_comment", (liveId,comment_text,type)=>{
-    console.log(comment_text);
-    io.emit("comment", comment_text , type);    
+  socket.on("newComment", (liveId,userId,commentText,type)=>{
+    watcherDbServices.getWatcherInfoByUserId(userId)
+    .then((row) => {
+      commentDbServices.createComment(commentText,userId,liveId);
+      io.sockets.in(liveId).emit("comment", row.user_name , commentText , type);    
+    });
   });
   
-  socket.on("shake_hands", (liveId,)=>{
-    socket.broadcast.emit("shake_hands");    
-  });
-
-  socket.on("watcher", (liveId) => {
-    socket.to(broadcaster[liveId]).emit("watcher", socket.id);
-  });
-
-  socket.on("offer", (id, message) => {
-    socket.to(id).emit("offer", socket.id, message);
-  });
-
-  socket.on("answer", (id, message) => {
-    socket.to(id).emit("answer", socket.id, message);
-  });
-
-  socket.on("candidate", (id, message) => {
-    socket.to(id).emit("candidate", socket.id, message);
+  socket.on("shakeHands", (liveId,userId)=>{
+    watcherDbServices.getWatcherInfoByUserId(userId)
+    .then((row) => {
+      socket.broadcast.to(liveId).emit("shakeHands" , row.user_name);    
+    });
   });
 
   socket.on("disconnect", (liveId) => {
-    socket.to(broadcaster[liveId]).emit("disconnectPeer", socket.id);
-  });
-
-  socket.on("disconnect", (liveId) => {
-    let visitors_num = store.get('visitors_num-'+liveId);
-    visitors_num -= 1;
-    store.set('visitors_num-'+liveId, visitors_num);
-    io.emit("visitors_number",visitors_num);
   });
   
 });
 
 
-server.listen(port,'192.168.1.5' ,() => console.log(`Server is running on port ${port}`));
+server.listen(port,() => console.log(`Server is running on port ${port}`));

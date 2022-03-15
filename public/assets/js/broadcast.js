@@ -12,23 +12,22 @@ const config = {
   ]
 };
 
-// Get camera and microphone
 const videoElement = document.querySelector("video");
 const audioSelect = document.querySelector("select#audioSource");
 const videoSelect = document.querySelector("select#videoSource");
 const muted = document.querySelector("#mute-unmute");
 const liveId = document.querySelector("#liveId");
-const visitors_num = document.querySelector(".visitors_num");
-const send_comment = document.querySelector("#send_comment");
+const visitorsNum = document.querySelector(".visitors_num");
+const sendComment = document.querySelector("#send_comment");
 const comment = document.querySelector("#comment_text");
-const comments_div = document.querySelector(".comments");
-const events_div = document.querySelector(".events");
+const commentsDiv = document.querySelector(".comments");
+const eventsDiv = document.querySelector(".events");
 const socket = io.connect(window.location.origin);
-
 
 
 window.onload = () => {
   init();
+  socket.emit("newBroadcaster",liveId.value.toString());
 }
 
 async function init() {
@@ -49,7 +48,8 @@ async function handleNegotiationNeededEvent(peer) {
   const offer = await peer.createOffer();
   await peer.setLocalDescription(offer);
   const payload = {
-      sdp: peer.localDescription
+      sdp: peer.localDescription,
+      liveId:liveId.value.toString()
   };
   const { data } = await axios.post('/broadcast', payload);
   const desc = new RTCSessionDescription(data.sdp);
@@ -61,21 +61,24 @@ window.onunload = window.onbeforeunload = () => {
   socket.close();
 };
 
-socket.on("visitors_number", number => {
-  visitors_num.innerHTML = number;
+socket.on("visitorsNumber", (number) => {
+  visitorsNum.innerHTML = number;
 });
 
-socket.on("shake_hands", () => {
+socket.on("shakeHands", (username) => {
   new_row = `
-    <div class="row fadeOut">
+    <div class="row fadeOut" id="joined-${username}">
       <i class='bx bxs-user-plus bx-tada' style='color:#95d63d;font-size:28px'></i> 
-      <span>new user joined</span>
+      <span>${username} joined</span>
     </div>
   `;
-  events_div.innerHTML = new_row + events_div.innerHTML;
+  eventsDiv.innerHTML = new_row + eventsDiv.innerHTML;
+  setTimeout(() => {
+    document.getElementById('joined-'+username).style.display = 'none';
+  } , 3400);
 });
 
-socket.on("comment", (text,type) => {
+socket.on("comment", (username,text,type) => {
   if(type == "admin"){
     comment_html = 
       `<div class="comment">
@@ -83,7 +86,7 @@ socket.on("comment", (text,type) => {
           <img src='/images/avatar.png' />
         </div>
         <div class="user">
-          <span>Admin</span>
+          <span>Poster Admin</span>
           <p>${text}</p>
         </div>
       </div>`;
@@ -94,12 +97,12 @@ socket.on("comment", (text,type) => {
           <img src='/images/avatar.png' />
         </div>
         <div class="user">
-          guest
+          ${username}
           <p>${text}</p>
         </div>
       </div>`;
   }
-  comments_div.innerHTML += comment_html;
+  commentsDiv.innerHTML += comment_html;
 });
 
 
@@ -172,7 +175,7 @@ function handleError(error) {
   console.error("Error: ", error);
 }
 
-send_comment.addEventListener('click',function(){
+sendComment.addEventListener('click',function(){
   let text = comment.value;
-  socket.emit("new_comment",liveId.value.toString(),text,"admin");
+  socket.emit("newComment",liveId.value.toString(),text,"admin");
 });
